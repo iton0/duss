@@ -1,0 +1,131 @@
+Phase 1: Planning and Design (2-3 Days)
+
+This phase is about defining the architecture of your distributed system before you write a single line of code.
+
+    Define Core Features:
+
+        Must-Haves: Shorten a long URL, redirect a short URL.
+
+        Nice-to-Haves: Analytics (click count), custom short URLs.
+
+    Choose the Technology Stack:
+
+        Go & Gin for the backend microservices.
+
+        PostgreSQL for the durable, primary database.
+
+        Redis for the high-performance distributed cache.
+
+        Docker for containerization and orchestration.
+
+        Railway for hosting.
+
+    Design the Microservices Architecture:
+
+        URL Shortener Service: Handles POST /api/v1/shorten and communicates with the Key Generation Service and PostgreSQL.
+
+        URL Redirect Service: Handles GET /:shortKey and communicates with Redis and PostgreSQL.
+
+        Key Generation Service: An internal service that generates unique short keys.
+
+    Plan the API Endpoints:
+
+        POST /api/v1/shorten (handled by the Shortener Service)
+
+        GET /:shortKey (handled by the Redirect Service)
+
+        (Optional) GET /api/v1/:shortKey/stats (handled by the Redirect Service)
+
+Phase 2: Core Services Development (3-5 Days)
+
+This is where you build each of your independent services, starting with the simplest.
+
+    Day 1-2: URL Redirect Service
+
+        Set up the url-redirect-service directory.
+
+        Define the Storage interface in internal/infrastructure/storage/storage.go and implement the concrete Redis and PostgreSQL clients.
+
+        Write the core redirection logic in internal/core/services/redirect.go.
+
+        Write unit tests for the core service to test its logic and database interactions.
+
+        Create the API handlers in internal/api/handlers.go for the GET /:shortKey endpoint.
+
+    Day 3-4: URL Shortener Service
+
+        Set up the url-shortener-service directory.
+
+        Write the core logic in internal/core/services/shortener.go. This service will need to call the Key Generation Service and write to the PostgreSQL database.
+
+        Write the API handler in internal/api/handlers.go for the POST /api/v1/shorten endpoint.
+
+        Implement basic validation and unit tests.
+
+The flow is simple: the api layer receives data and passes it as a domain.URL struct to the core layer, which then passes that same struct to the infrastructure layer for persistence. The shared/domain module acts as the common data type throughout this entire process.
+
+    Day 5: Key Generation Service
+
+        Set up the key-gen-service directory.
+
+        Implement the internal service and core logic to generate unique keys.
+
+        Expose a simple, internal-only API endpoint that the url-shortener-service can call.
+
+Phase 3: Orchestration and Inter-Service Communication (2-3 Days)
+
+This phase makes your separate services work together as a single system.
+
+    Day 1: Dockerize Each Service
+
+        Write a separate Dockerfile for each of your three Go services (url-shortener-service, url-redirect-service, and key-gen-service). Use a multi-stage build to keep the images small.
+
+    Day 2-3: docker-compose.yml and Local Testing
+
+        Create a docker-compose.yml file at the root of your project. This file will define and orchestrate all five of your containers (3 Go services, PostgreSQL, Redis).
+
+        Configure the internal networking so your services can find and communicate with each other (e.g., the redirect service connects to the Redis service by name).
+
+        Set up environment variables for database connection strings and other settings.
+
+        Use docker-compose up to start the entire system and test all endpoints locally.
+
+Phase 4: Finalization and Deployment (1-2 Days)
+
+This is the phase where you make your project a professional, live service.
+
+    Day 1: Documentation
+
+        Write a comprehensive README.md that explains the project, its microservices architecture, how to run it with Docker Compose, and its API endpoints.
+
+        Update your ARCHITECTURE.md file to reflect the final design.
+
+    Day 2: Deployment
+
+        Set up a new project on Railway.
+
+        Connect your GitHub repository and have Railway automatically deploy your docker-compose.yml file.
+
+        Configure the environment variables on Railway for your live services.
+
+        Test the live endpoints and share the URL.
+
+Phase 5: Polishing and Feature Extension (Ongoing)
+
+This is where you go beyond the basics to impress employers.
+
+    Add Advanced Features:
+
+        Implement click tracking and display a basic analytics page.
+
+        Allow users to specify a custom short key.
+
+    Improve Reliability and Security:
+
+        Implement basic rate limiting to prevent abuse across your API endpoints.
+
+        Add a blacklist for known malicious domains.
+
+    Write a Detailed Blog Post:
+
+        Document your entire process, from design to deployment. Explain your architectural choices and what you learned. This will be a powerful tool for your job search.
