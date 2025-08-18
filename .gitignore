@@ -1,0 +1,40 @@
+# Compiled binaries, libraries, and test executables
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+
+# Go module binaries
+duss-shortener
+duss-redirect
+duss-keygen
+
+# Test artifacts and code coverage files
+*.out
+coverage.*
+*.coverprofile
+profile.cov
+
+# Dependency directories (uncomment if you use vendoring)
+# vendor/
+
+# Environment files
+.env
+
+# Go build cache and module cache
+.cache/
+modcache/
+
+# IDE/Editor-specific files
+.idea/
+.vscode/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Other common generated files
+tmp/
+*.tmp
