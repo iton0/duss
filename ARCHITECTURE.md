@@ -89,6 +89,8 @@ Each service directory is a self-contained, independent Go module. It is a separ
 
   - **internal/infrastructure/storage:** Contains the storage implementations needed by this service. The `url-shortener-service` will use the PostgreSQL implementation, and the `url-redirect-service` will use the Redis implementation.
 
+  - **internal/infrastructure/web:** This package is responsible for all web-facing concerns. The router.go file defines and initializes the Gin router, mapping API endpoints to their respective handlers.
+
 - **go.mod:** A separate Go module file for this service, allowing it to manage its dependencies independently.
 
 - **Dockerfile:** A separate Dockerfile for building this service's container image.
@@ -126,4 +128,3 @@ Generates a new, unique short key for a URL. This internal endpoint is handled b
 - **URL:** `/api/v1/generate-key`
 - **Method:** `GET`
 - **Functionality:** Generates and returns a new, cryptographically secure short key that can be used by the `url-shortener-service`.
-
