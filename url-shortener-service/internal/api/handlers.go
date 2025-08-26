@@ -1,41 +1,43 @@
 package api
 
 import (
-	"context"
-	"encoding/json"
+	"errors"
 	"net/http"
-	"time"
 
-	"github.com/iton0/duss/shared/domain" // Import the shared domain model
+	"github.com/gin-gonic/gin"
+
 	"github.com/iton0/duss/url-shortener-service/internal/core/services"
 )
 
-// CreateURLRequest is the API request body.
-type CreateURLRequest struct {
-	LongURL string `json:"long_url"`
+type ShortenerHandler struct {
+	shortenerService services.ShortenerServiceIface
 }
 
-// ShortenHandler encapsulates the API logic.
-type ShortenHandler struct {
-	shortenerService *services.ShortenerService
+// NewRedirectHandler creates a new RedirectHandler instance.
+// The constructor now accepts the new interface type.
+func NewShortenerHandler(ss services.ShortenerServiceIface) *ShortenerHandler {
+	return &ShortenerHandler{shortenerService: ss}
 }
 
-func (h *ShortenHandler) CreateShortenedURL(w http.ResponseWriter, r *http.Request) {
-	var req CreateURLRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
+// HandleRedirect handles the GET /:shortKey request using Gin's context.
+func (h *ShortenerHandler) HandleShortener(c *gin.Context) {
+	// TODO: implement the shorterner version of this function
+	shortKey := c.Param("shortKey")
+
+	if shortKey == "" {
+		c.String(http.StatusNotFound, "Not Found")
 		return
 	}
 
-	// Call the core service to handle the business logic, passing the data as the LongURL field
-	shortenedURL, err := h.shortenerService.Shorten(r.Context(), req.LongURL)
+	longURL, err := h.shortenerService.Shorten()(c.Request.Context(), shortKey)
 	if err != nil {
-		http.Error(w, "Failed to shorten URL", http.StatusInternalServerError)
+		if errors.Is(err, services.ErrURLNotFound) {
+			c.String(http.StatusNotFound, "Not Found")
+			return
+		}
+		c.String(http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
-	// Respond to the client with the created domain.URL struct
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(shortenedURL)
+	c.Redirect(http.StatusMovedPermanently, longURL)
 }

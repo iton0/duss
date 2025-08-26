@@ -1,69 +1,93 @@
 ## Project Structure
 ```
 duss/
-├── shared/
-│   └── domain/
-│       └── url.go
-├── url-shortener-service/
-│   ├── cmd/
-│   │   └── server/
-│   │       └── main.go
-│   ├── internal/
-│   │   ├── api/
-│   │   │   └── handlers.go
-│   │   ├── core/
-│   │   │   ├── services/
-│   │   │   │   └── shortener.go
-│   │   └── infrastructure/
-│   │       ├── storage/
-│   │       │   ├── mock/
-│   │       │   │   └── mock_storage.go
-│   │       │   ├── storage.go
-│   │       │   └── postgres.go
-│   │       └── web/
-│   │           └── router.go
-│   ├── go.mod
-│   └── Dockerfile
-├── url-redirect-service/
-│   ├── cmd/
-│   │   └── server/
-│   │       └── main.go
-│   ├── internal/
-│   │   ├── api/
-│   │   │   └── handlers.go
-│   │   ├── core/
-│   │   │   └── services/
-│   │   │       └── redirect.go
-│   │   └── infrastructure/
-│   │       ├── storage/
-│   │       │   ├── mock/
-│   │       │   │   └── mock_storage.go
-│   │       │   ├── storage.go
-│   │       │   └── redis.go
-│   │       └── web/
-│   │           └── router.go
-│   ├── go.mod
-│   └── Dockerfile
-├── key-gen-service/
-│   ├── cmd/
-│   │   └── server/
-│   │       └── main.go
-│   ├── internal/
-│   │   ├── api/
-│   │   │   └── handlers.go
-│   │   ├── core/
-│   │   │   └── services/
-│   │   │       └── key_generator.go
-│   │   └── infrastructure/
-│   │       └── web/
-│   │           └── router.go
-│   │
-│   ├── go.mod
-│   └── Dockerfile
-├── configs/
-│   └── config.yaml
+├── ARCHITECTURE.md
+├── CODE_OF_CONDUCT.md
+├── configs
+│   └── config.yaml
+├── CONTRIBUTING.md
 ├── docker-compose.yml
-└── scripts/
+├── go.work
+├── go.work.sum
+├── key-gen-service
+│   ├── cmd
+│   │   └── server
+│   │       └── main.go
+│   ├── Dockerfile
+│   ├── go.mod
+│   └── internal
+│       ├── api
+│       │   ├── handlers.go
+│       │   └── handlers_test.go
+│       ├── core
+│       │   └── services
+│       │       ├── key_generator.go
+│       │       └── key_generator_test.go
+│       └── infrastructure
+│           └── web
+│               ├── router.go
+│               └── router_test.go
+├── LICENSE
+├── Makefile
+├── mise.toml
+├── README.md
+├── scripts
+│   └── init.sh
+├── shared
+│   ├── domain
+│   │   └── url.go
+│   └── go.mod
+├── timeline.txt
+├── url-redirect-service
+│   ├── cmd
+│   │   └── server
+│   │       └── main.go
+│   ├── Dockerfile
+│   ├── go.mod
+│   ├── go.sum
+│   └── internal
+│       ├── api
+│       │   ├── handlers.go
+│       │   └── handlers_test.go
+│       ├── core
+│       │   └── services
+│       │       ├── redirect.go
+│       │       └── redirect_test.go
+│       └── infrastructure
+│           ├── storage
+│           │   ├── mock
+│           │   │   └── mock_storage.go
+│           │   ├── redis.go
+│           │   ├── redis_test.go
+│           │   └── storage.go
+│           └── web
+│               ├── router.go
+│               └── router_test.go
+└── url-shortener-service
+    ├── cmd
+    │   └── server
+    │       └── main.go
+    ├── Dockerfile
+    ├── go.mod
+    ├── go.sum
+    └── internal
+        ├── api
+        │   ├── handlers.go
+        │   └── handlers_test.go
+        ├── core
+        │   └── services
+        │       ├── shortener.go
+        │       └── shortener_test.go
+        └── infrastructure
+            ├── storage
+            │   ├── mock
+            │   │   └── mock_storage.go
+            │   ├── postgres.go
+            │   ├── postgres_test.go
+            │   └── storage.go
+            └── web
+                ├── router.go
+                └── router_test.go
 ```
 ---
 
@@ -87,7 +111,7 @@ Each service directory is a self-contained, independent Go module. It is a separ
 
 - **internal/infrastructure:** Contains the tools and concrete implementations specific to this service.
 
-  - **internal/infrastructure/storage:** Contains the storage implementations needed by this service. The `url-shortener-service` will use the PostgreSQL implementation, and the `url-redirect-service` will use the Redis implementation.
+  - **internal/infrastructure/storage:** Contains the storage implementations needed by this service. Both the `url-shortener-service` and `url-redirect-service` will use the PostgreSQL and Redis implementations for durability and speed respectively.
 
   - **internal/infrastructure/web:** This package is responsible for all web-facing concerns. The router.go file defines and initializes the Gin router, mapping API endpoints to their respective handlers.
 
