@@ -6,13 +6,9 @@ To get the project up and running locally, follow these steps.
 - [Git](https://git-scm.com/downloads)
 - [ARCHITECTURE.md](ARCHITECTURE.md)
 - make *(recommended for testing)*
+- Fork and clone the repo
 
-#### 1. Clone the Repository:
-```bash
-git clone https://github.com/iton0/duss.git
-cd duss
-```
-#### 2. Initialize Go Modules:
+#### Initialize Go Modules:
 Use the provided init script to navigate into each service directory and initialize the Go modules.
 ```bash
 ./scripts/init.sh
@@ -21,5 +17,5 @@ Use the provided init script to navigate into each service directory and initial
 ### Testing
 Tests can be run either by:
 - changing into respective service directories and running  `go test ./... -v -coverage`
-- using make
+- using make (this can be run at root level of the project)
   - Please review the [Makefile](Makefile) for usage
