@@ -11,6 +11,10 @@ import (
 // ErrNotFound is returned when the key is not found in Redis.
 var ErrNotFound = errors.New("short key not found")
 
+// Ensure RedisClient implicitly implements Storage.
+// This is a compile-time check to ensure the contract is fulfilled.
+var _ Storage = (*RedisClient)(nil)
+
 // RedisClient is a concrete implementation of the Storage interface using Redis.
 type RedisClient struct {
 	client *redis.Client

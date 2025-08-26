@@ -16,6 +16,10 @@ type RedirectServiceIface interface {
 	GetOriginalURL(ctx context.Context, shortKey string) (string, error)
 }
 
+// Ensure RedirectService implicitly implements RedirectServiceIface.
+// This is a compile-time check to ensure the contract is fulfilled.
+var _ RedirectServiceIface = (*RedirectService)(nil)
+
 // RedirectService encapsulates the core logic for URL redirection.
 // This struct now implicitly implements the RedirectServiceIface.
 type RedirectService struct {
@@ -33,9 +37,10 @@ func (s *RedirectService) GetOriginalURL(ctx context.Context, shortKey string) (
 	if err != nil {
 		if errors.Is(err, storage.ErrNotFound) {
 			return "", ErrURLNotFound
+		} else {
+			log.Printf("unexpected storage error: %v", err)
+			return "", err
 		}
-		log.Printf("storage error: %v", err)
-		return "", err
 	}
 	return longURL, nil
 }
