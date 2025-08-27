@@ -29,7 +29,7 @@ func (h *ShortenerHandler) HandleShortener(c *gin.Context) {
 		return
 	}
 
-	longURL, err := h.shortenerService.Shorten()(c.Request.Context(), shortKey)
+	longURL, err := h.shortenerService.Shorten()
 	if err != nil {
 		if errors.Is(err, services.ErrURLNotFound) {
 			c.String(http.StatusNotFound, "Not Found")

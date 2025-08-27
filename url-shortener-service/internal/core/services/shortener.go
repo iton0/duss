@@ -3,6 +3,7 @@ package services
 import (
 	"context"
 	"errors"
+	"log"
 	"time"
 
 	"github.com/iton0/duss/shared/domain"
@@ -31,11 +32,10 @@ func NewShortenerService(s storage.Storage) *ShortenerService {
 }
 
 func (s *ShortenerService) Shorten(ctx context.Context, longURL string) (*domain.URL, error) {
-	// Generate a unique short key here (e.g., call your key-gen-service)
 	// TODO: needs to call from the keygen service
 	shortKey := generateUniqueKey()
 
-	// Create the domain.URL entity. This is the heart of the business logic.
+	// create the domain.URL entity
 	newURL := &domain.URL{
 		ShortKey:  shortKey,
 		LongURL:   longURL,
@@ -46,7 +46,14 @@ func (s *ShortenerService) Shorten(ctx context.Context, longURL string) (*domain
 	// Pass the domain.URL entity to the storage layer to be persisted.
 	err := s.storage.Save(ctx, newURL)
 	if err != nil {
-		return nil, err
+		switch {
+		case errors.Is(err, ErrInvalidURL):
+		case errors.Is(err, ErrBlacklistedURL):
+		case errors.Is(err, ErrDuplicatedKey):
+		default:
+			log.Printf("unexpected server error: %v", err)
+			return nil, err
+		}
 	}
 
 	return newURL, nil

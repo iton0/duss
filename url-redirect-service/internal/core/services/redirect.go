@@ -35,10 +35,11 @@ func NewRedirectService(s storage.Storage) *RedirectService {
 func (s *RedirectService) GetOriginalURL(ctx context.Context, shortKey string) (string, error) {
 	longURL, err := s.storage.Get(ctx, shortKey)
 	if err != nil {
-		if errors.Is(err, storage.ErrNotFound) {
+		switch {
+		case errors.Is(err, storage.ErrNotFound):
 			return "", ErrURLNotFound
-		} else {
-			log.Printf("unexpected storage error: %v", err)
+		default:
+			log.Printf("unexpected server error: %v", err)
 			return "", err
 		}
 	}
