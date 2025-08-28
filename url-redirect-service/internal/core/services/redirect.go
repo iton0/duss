@@ -16,7 +16,7 @@ type RedirectServiceIface interface {
 	GetOriginalURL(ctx context.Context, shortKey string) (string, error)
 }
 
-// Ensure RedirectService implicitly implements RedirectServiceIface.
+// Ensure RedirectService explicitly implements RedirectServiceIface.
 // This is a compile-time check to ensure the contract is fulfilled.
 var _ RedirectServiceIface = (*RedirectService)(nil)
 

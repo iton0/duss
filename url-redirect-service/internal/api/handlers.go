@@ -32,12 +32,14 @@ func (h *RedirectHandler) HandleRedirect(c *gin.Context) {
 
 	longURL, err := h.redirectService.GetOriginalURL(c.Request.Context(), shortKey)
 	if err != nil {
-		if errors.Is(err, services.ErrURLNotFound) {
+		switch {
+		case errors.Is(err, services.ErrURLNotFound):
 			c.String(http.StatusNotFound, "Not Found")
 			return
+		default:
+			c.String(http.StatusInternalServerError, "Internal Server Error")
+			return
 		}
-		c.String(http.StatusInternalServerError, "Internal Server Error")
-		return
 	}
 
 	c.Redirect(http.StatusMovedPermanently, longURL)

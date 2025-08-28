@@ -2,51 +2,61 @@ package storage
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
-	"github.com/redis/go-redis/v9"
+	"github.com/jackc/pgx/v5/pgxpool"
+
+	"github.com/iton0/duss/shared/domain"
 )
 
-// ErrNotFound is returned when the key is not found in Redis.
-var ErrNotFound = errors.New("short key not found")
+// Ensure PostgresClient implicitly implements Storage.
+var _ Storage = (*PostgresClient)(nil)
 
-// Ensure RedisClient implicitly implements Storage.
-// This is a compile-time check to ensure the contract is fulfilled.
-var _ Storage = (*RedisClient)(nil)
-
-// RedisClient is a concrete implementation of the Storage interface using Redis.
-type RedisClient struct {
-	client *redis.Client
+// PostgresClient is a concrete implementation of the Storage interface using PostgreSQL.
+type PostgresClient struct {
+	pool *pgxpool.Pool
 }
 
-// NewRedisClient creates and returns a new RedisClient, or an error if the connection fails.
-// It also accepts a context for handling timeouts and cancellations during initialization.
-func NewRedisClient(ctx context.Context, addr string, password string, db int) (*RedisClient, error) {
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     addr,
-		Password: password,
-		DB:       db,
-	})
-
-	// Use Ping to verify the connection. This is a crucial step.
-	// We use the provided context to ensure the ping doesn't hang indefinitely.
-	if err := rdb.Ping(ctx).Err(); err != nil {
-		return nil, fmt.Errorf("failed to connect to Redis: %w", err)
+// NewPostgresClient creates and returns a new PostgresClient.
+func NewPostgresClient(ctx context.Context, dsn string) (*PostgresClient, error) {
+	config, err := pgxpool.ParseConfig(dsn)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse DSN: %w", err)
 	}
 
-	return &RedisClient{client: rdb}, nil
+	pool, err := pgxpool.NewWithConfig(ctx, config)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create connection pool: %w", err)
+	}
+
+	if err := pool.Ping(ctx); err != nil {
+		return nil, fmt.Errorf("failed to ping database: %w", err)
+	}
+
+	return &PostgresClient{pool: pool}, nil
 }
 
-// Get retrieves the long URL from Redis.
-func (r *RedisClient) Get(ctx context.Context, shortKey string) (string, error) {
-	longURL, err := r.client.Get(ctx, shortKey).Result()
-	if err == redis.Nil {
-		// Correctly handle "not found" case.
-		return "", ErrNotFound
-	} else if err != nil {
-		// IMPORTANT: Return the error instead of panicking.
-		return "", fmt.Errorf("failed to get key from Redis: %w", err)
+// Save persists a domain.URL entity to the PostgreSQL database.
+func (p *PostgresClient) Save(ctx context.Context, url *domain.URL) error {
+	query := `
+		INSERT INTO urls (short_key, long_url, created_at, redirects)
+		VALUES ($1, $2, $3, $4)
+		ON CONFLICT (short_key) DO NOTHING
+	`
+	_, err := p.pool.Exec(ctx, query, url.ShortKey, url.LongURL, url.CreatedAt, url.Redirects)
+	if err != nil {
+		return fmt.Errorf("failed to save URL: %w", err)
 	}
-	return longURL, nil
+
+	return nil
+}
+
+// IncrementRedirects increments the redirects count for a given short key.
+func (p *PostgresClient) IncrementRedirects(ctx context.Context, shortKey string) error {
+	query := `UPDATE urls SET redirects = redirects + 1 WHERE short_key = $1`
+	_, err := p.pool.Exec(ctx, query, shortKey)
+	if err != nil {
+		return fmt.Errorf("failed to increment redirects: %w", err)
+	}
+	return nil
 }

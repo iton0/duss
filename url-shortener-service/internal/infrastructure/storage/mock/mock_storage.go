@@ -3,38 +3,48 @@ package mock
 import (
 	"context"
 	"errors"
+
+	"github.com/iton0/duss/shared/domain"
 )
 
-// ErrNotFound is a sentinel error for when a key is not found,
+// ErrDuplicatedKey is a sentinel error for when a key already exists,
 // matching the expected error from a real storage implementation.
-var ErrNotFound = errors.New("key not found")
+var ErrDuplicatedKey = errors.New("URL already taken")
 
-// MockStorage is a mock implementation of the Storage interface.
-type MockStorage struct {
-	data          map[string]string
+// MockPostgresStorage is a mock implementation of the Storage interface for the url-shortener-service.
+type MockPostgresStorage struct {
+	// The map stores long URLs, with short keys as keys.
+	data          map[string]*domain.URL
 	simulateError bool
 }
 
-// NewMockStorage creates a new MockStorage instance.
-func NewMockStorage(initialData map[string]string) *MockStorage {
-	if initialData == nil {
-		initialData = make(map[string]string)
-	}
-	return &MockStorage{
-		data: initialData,
+// NewMockPostgresStorage creates a new MockPostgresStorage instance.
+func NewMockPostgresStorage() *MockPostgresStorage {
+	return &MockPostgresStorage{
+		data: make(map[string]*domain.URL),
 	}
 }
 
-// Get simulates retrieving a value from the "database".
-func (m *MockStorage) Get(ctx context.Context, shortKey string) (string, error) {
+// Save simulates saving a URL to the "database".
+func (m *MockPostgresStorage) Save(ctx context.Context, url *domain.URL) error {
 	if m.simulateError {
-		return "", errors.New("mock storage connection error")
+		return errors.New("mock storage save error")
 	}
 
-	longURL, ok := m.data[shortKey]
-	if !ok {
-		// Return the specific error your service expects.
-		return "", ErrNotFound
+	// Check for a duplicate key before saving.
+	if _, ok := m.data[url.ShortKey]; ok {
+		return ErrDuplicatedKey
 	}
-	return longURL, nil
+
+	m.data[url.ShortKey] = url
+	return nil
+}
+
+// Get is provided for testing convenience, though it's not part of the primary Storage interface for this service.
+func (m *MockPostgresStorage) Get(ctx context.Context, shortKey string) (*domain.URL, error) {
+	url, ok := m.data[shortKey]
+	if !ok {
+		return nil, errors.New("key not found")
+	}
+	return url, nil
 }
