@@ -1,9 +1,7 @@
 package main
 
 import (
-	"context"
 	"log"
-	"time"
 
 	"github.com/iton0/duss/key-gen-service/internal/api"
 	"github.com/iton0/duss/key-gen-service/internal/core/services"
@@ -11,9 +9,6 @@ import (
 )
 
 func main() {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
-
 	keygenService := services.NewKeygenService()
 	keygenHandler := api.NewKeygenHandler(keygenService)
 	router := web.NewRouter(keygenHandler)

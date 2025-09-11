@@ -1,6 +1,24 @@
 ## Project Structure
 ```
 duss/
+├── api-gateway-service
+│   ├── cmd
+│   │   └── server
+│   │       └── main.go
+│   ├── Dockerfile
+│   ├── go.mod
+│   └── internal
+│       ├── api
+│       │   ├── handlers.go
+│       │   └── handlers_test.go
+│       ├── core
+│       │   └── services
+│       │       ├── api_gateway.go
+│       │       └── api_gateway_test.go
+│       └── infrastructure
+│           └── web
+│               ├── router.go
+│               └── router_test.go
 ├── ARCHITECTURE.md
 ├── CODE_OF_CONDUCT.md
 ├── configs
@@ -57,6 +75,8 @@ duss/
 │           ├── storage
 │           │   ├── mock
 │           │   │   └── mock_storage.go
+│           │   ├── postgres.go
+│           │   ├── postgres_test.go
 │           │   ├── redis.go
 │           │   ├── redis_test.go
 │           │   └── storage.go
@@ -84,10 +104,13 @@ duss/
             │   │   └── mock_storage.go
             │   ├── postgres.go
             │   ├── postgres_test.go
+            │   ├── redis.go
+            │   ├── redis_test.go
             │   └── storage.go
             └── web
                 ├── router.go
                 └── router_test.go
+
 ```
 ---
 

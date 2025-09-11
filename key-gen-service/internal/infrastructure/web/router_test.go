@@ -7,8 +7,6 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/iton0/duss/url-redirect-service/internal/api"
-	"github.com/iton0/duss/url-redirect-service/internal/infrastructure/web"
 )
 
 type MockRedirectService struct{}
