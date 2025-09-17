@@ -1,9 +1,9 @@
 go 1.25.0
 
 use (
-	./key-gen-service
 	./api-gateway-service
+	./key-gen-service
+	./shared
 	./url-redirect-service
 	./url-shortener-service
-	./shared
 )
