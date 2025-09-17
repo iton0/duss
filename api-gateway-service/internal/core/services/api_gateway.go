@@ -1,23 +1,48 @@
 package services
 
-// TODO: what error(s)
+import (
+	"context"
+)
 
 // GatewayServiceIface defines the behavior of the gateway service.
 type GatewayServiceIface interface {
-	// TODO: what function(s) should go here
+	ShortenURL(ctx context.Context, originalURL string) (string, error)
+	RedirectURL(ctx context.Context, shortURL string) (string, error)
 }
 
 // Ensure GatewayService explicitly implements GatewayServiceIface.
 // This is a compile-time check to ensure the contract is fulfilled.
 var _ GatewayServiceIface = (*GatewayService)(nil)
 
-// GatewayService encapsulates the core logic for URL gatewayion.
-// This struct now implicitly implements the GatewayServiceIface.
+// GatewayService encapsulates the core logic for URL gatewaying.
 type GatewayService struct {
-	// TODO: what will this strcutr have if anything
+	shortenerClient ShortenerServiceClient
+	redirectClient  RedirectServiceClient
 }
 
-// NewGatewayService creates a new GatewayService instance.
-func NewGatewayService() *GatewayService {
-	return &GatewayService{}
+// These are the client interfaces that the gateway depends on.
+type ShortenerServiceClient interface {
+	Shorten(ctx context.Context, originalURL string) (string, error)
+}
+
+type RedirectServiceClient interface {
+	GetOriginalURL(ctx context.Context, shortURL string) (string, error)
+}
+
+// ShortenURL implements the GatewayServiceIface.
+func (s *GatewayService) ShortenURL(ctx context.Context, originalURL string) (string, error) {
+	return s.shortenerClient.Shorten(ctx, originalURL)
+}
+
+// RedirectURL implements the GatewayServiceIface.
+func (s *GatewayService) RedirectURL(ctx context.Context, shortURL string) (string, error) {
+	return s.redirectClient.GetOriginalURL(ctx, shortURL)
+}
+
+// NewGatewayService creates a new GatewayService instance with its dependencies.
+func NewGatewayService(shortenerClient ShortenerServiceClient, redirectClient RedirectServiceClient) *GatewayService {
+	return &GatewayService{
+		shortenerClient: shortenerClient,
+		redirectClient:  redirectClient,
+	}
 }
