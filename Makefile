@@ -2,13 +2,15 @@
 REDIRECT_SERVICE_PATH := ./url-redirect-service
 SHORTEN_SERVICE_PATH := ./url-shortener-service
 KEYGEN_SERVICE_PATH := ./key-gen-service
+GATEWAY_SERVICE_PATH := ./api-gateway-service
 GO_CMD := go
 
 # Define flags for specific services and test types
 # r = redirect service
 # s = shorten service
 # k = keygen service
-SERVICES ?= rsk
+# k = gateway service
+SERVICES ?= rskg
 TYPE ?= all
 
 .PHONY: test check-redis check-postgres clean clean-redirect clean-shorten clean-keygen
@@ -48,8 +50,10 @@ test:
 		echo "Running storage tests..."; \
 	elif [ "$(TYPE)" = "web" ]; then \
 		echo "Running web tests..."; \
+	elif [ "$(TYPE)" = "clients" ]; then \
+		echo "Running clients tests..."; \
 	else \
-		echo "Error: Invalid TYPE. Use 'all', 'api', 'services', 'web', or 'storage'."; \
+		echo "Error: Invalid TYPE. Use 'all', 'api', 'clients', 'services', 'web', or 'storage'."; \
 		exit 1; \
 	fi
 
@@ -62,10 +66,30 @@ test:
 	@if echo "$(SERVICES)" | grep -q "k"; then \
 		$(MAKE) test-keygen-$(TYPE); \
 	fi
+	@if echo "$(SERVICES)" | grep -q "g"; then \
+		$(MAKE) test-gateway-$(TYPE); \
+	fi
 
 # =================================================================
 # Service-Specific Test Targets
 # =================================================================
+
+.PHONY: test-gateway-all test-gateway-api test-gateway-services test-gateway-clients test-gateway-web
+test-gateway-all:
+	@echo "--- Running all tests for the API Gateway Service ---"
+	$(GO_CMD) test -v -cover $(GATEWAY_SERVICE_PATH)/...
+test-gateway-api:
+	@echo "--- Running API tests for the API Gateway Service ---"
+	$(GO_CMD) test -v -cover $(GATEWAY_SERVICE_PATH)/internal/api/...
+test-gateway-services:
+	@echo "--- Running core services tests for the API Gateway Service ---"
+	$(GO_CMD) test -v -cover $(GATEWAY_SERVICE_PATH)/internal/core/services/...
+test-gateway-clients:
+	@echo "--- Running clients tests for the API Gateway Service ---"
+	$(GO_CMD) test -v -cover $(GATEWAY_SERVICE_PATH)/internal/infrastructure/clients/...
+test-gateway-web:
+	@echo "--- Running web tests for the API Gateway Service ---"
+	$(GO_CMD) test -v -cover $(GATEWAY_SERVICE_PATH)/internal/infrastructure/web/...
 
 .PHONY: test-redirect-all test-redirect-api test-redirect-services test-redirect-storage test-redirect-web
 test-redirect-all: check-redis
@@ -136,6 +160,7 @@ clean:
 	@cd $(REDIRECT_SERVICE_PATH) && $(GO_CMD) mod tidy
 	@cd $(SHORTEN_SERVICE_PATH) && $(GO_CMD) mod tidy
 	@cd $(KEYGEN_SERVICE_PATH) && $(GO_CMD) mod tidy
+	@cd $(GATEWAY_SERVICE_PATH) && $(GO_CMD) mod tidy
 
 clean-redirect:
 	@echo "--- Cleaning Go test cache ---"
@@ -154,3 +179,9 @@ clean-keygen:
 	$(GO_CMD) clean -testcache
 	@echo "--- Tidying modules for Keygen service ---"
 	@cd $(KEYGEN_SERVICE_PATH) && $(GO_CMD) mod tidy
+
+clean-gateway:
+	@echo "--- Cleaning Go test cache ---"
+	$(GO_CMD) clean -testcache
+	@echo "--- Tidying modules for Keygen service ---"
+	@cd $(GATEWAY_SERVICE_PATH) && $(GO_CMD) mod tidy
