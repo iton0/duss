@@ -1,13 +1,12 @@
 # duss
 
-> [!CAUTION]
-> This project is being actively developed
-> and is subject to breaking changes
-
 ### Distributed URL Shortening Service
 
 duss is a modern, distributed URL shortening service built with Go. This project is a hands-on exploration of a microservices architecture, focusing on performance, scalability, and maintainability.
 
+> [!CAUTION]
+> This project is being actively developed
+> and is subject to breaking changes
 ---
 
 ### Features
