@@ -118,7 +118,7 @@ duss/
 
 ### Root Directory (`duss`)
 
-This directory now acts as a monorepo, holding all the microservices and shared project-level files.
+This directory is a monorepo, holding all the microservices and shared project-level files.
 
 - **docker-compose.yml:** The primary orchestration file. It is now responsible for defining and running multiple services: the three Go applications (url-shortener, url-redirect, key-gen), a PostgreSQL container, and a Redis container.
 
