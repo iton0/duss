@@ -1,0 +1,58 @@
+services:
+  api-gateway-service:
+    build:
+      context: ./api-gateway-service
+    ports:
+      - "${PUBLIC_GATEWAY_PORT}:${INTERNAL_GATEWAY_PORT}"
+    depends_on:
+      - url-shortener-service
+      - url-redirect-service
+    networks:
+      - duss-network
+
+  url-shortener-service:
+    build:
+      context: ./url-shortener-service
+    expose:
+      - "${INTERNAL_SHORTEN_PORT}"
+    depends_on:
+      - key-gen-service
+      - postgres
+      - redis
+    networks:
+      - duss-network
+
+  url-redirect-service:
+    build:
+      context: ./url-redirect-service
+    expose:
+      - "${INTERNAL_REDIRECT_PORT}"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - duss-network
+
+  key-gen-service:
+    build:
+      context: ./key-gen-service
+    expose:
+      - "${INTERNAL_KEYGEN_PORT}"
+    networks:
+      - duss-network
+
+  postgres:
+    image: postgres:13
+    # ... other postgres configuration
+    networks:
+      - duss-network
+
+  redis:
+    image: redis:6-alpine
+    # ... other redis configuration
+    networks:
+      - duss-network
+
+networks:
+  duss-network:
+    driver: bridge

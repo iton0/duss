@@ -24,8 +24,6 @@ duss/
 │               └── router_test.go
 ├── ARCHITECTURE.md
 ├── CODE_OF_CONDUCT.md
-├── configs
-│   └── config.yaml
 ├── CONTRIBUTING.md
 ├── docker-compose.yml
 ├── go.work

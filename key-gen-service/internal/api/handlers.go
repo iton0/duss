@@ -8,6 +8,9 @@ import (
 	"github.com/iton0/duss/key-gen-service/internal/core/services"
 )
 
+// TODO: what errors to put here
+var errFoo = errors.New("")
+
 // KeygenHandler handles API requests related to key generation.
 type KeygenHandler struct {
 	keygenService services.KeygenServiceIface

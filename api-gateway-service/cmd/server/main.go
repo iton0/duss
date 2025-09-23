@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"os"
 
@@ -8,9 +9,16 @@ import (
 	"github.com/iton0/duss/api-gateway-service/internal/core/services"
 	"github.com/iton0/duss/api-gateway-service/internal/infrastructure/clients"
 	"github.com/iton0/duss/api-gateway-service/internal/infrastructure/web"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	hostPort := os.Getenv("PUBLIC_GATEWAY_PORT")
+
 	// 1. Get configuration from environment variables.
 	shortenerServiceURL := os.Getenv("SHORTENER_SERVICE_URL")
 	if shortenerServiceURL == "" {
@@ -40,8 +48,8 @@ func main() {
 	router := web.NewRouter(gatewayHandler)
 
 	// 6. Start the server.
-	log.Println("Starting API Gateway on port 8080...")
-	if err := router.Run(":8080"); err != nil {
+	log.Printf("Starting API Gateway on port %s...\n", hostPort)
+	if err := router.Run(fmt.Sprintf(":%s", hostPort)); err != nil {
 		log.Fatalf("Failed to run server: %v", err)
 	}
 }

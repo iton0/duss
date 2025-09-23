@@ -47,7 +47,7 @@ func (s *KeygenService) GenerateKey(url string) (string, error) {
 	// NOTE: adjust the length to control the key's size and collision rate
 	truncatedHash := hashBytes[:8]
 
-	// Base58 encode the truncated hash to make it more compact and URL-safe
+	// make it more compact and URL-safe
 	encodedKey := base58.Encode(truncatedHash)
 
 	return encodedKey, nil
