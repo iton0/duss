@@ -9,9 +9,14 @@ import (
 	"github.com/iton0/duss/url-redirect-service/internal/core/services"
 	"github.com/iton0/duss/url-redirect-service/internal/infrastructure/storage"
 	"github.com/iton0/duss/url-redirect-service/internal/infrastructure/web"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 

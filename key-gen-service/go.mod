@@ -5,6 +5,7 @@ go 1.25.0
 require (
 	github.com/btcsuite/btcd/btcutil v1.1.6
 	github.com/gin-gonic/gin v1.10.1
+	github.com/joho/godotenv v1.5.1
 )
 
 require (

@@ -6,9 +6,14 @@ import (
 	"github.com/iton0/duss/key-gen-service/internal/api"
 	"github.com/iton0/duss/key-gen-service/internal/core/services"
 	"github.com/iton0/duss/key-gen-service/internal/infrastructure/web"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	keygenService := services.NewKeygenService()
 	keygenHandler := api.NewKeygenHandler(keygenService)
 	router := web.NewRouter(keygenHandler)

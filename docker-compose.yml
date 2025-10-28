@@ -4,34 +4,41 @@ services:
       context: ./api-gateway-service
     ports:
       - "${PUBLIC_GATEWAY_PORT}:${INTERNAL_GATEWAY_PORT}"
-    depends_on:
-      - url-shortener-service
-      - url-redirect-service
+    # ❌ REMOVED: depends_on: [url-shortener-service, url-redirect-service]
+    # The Gateway must start independently to support K8s scaling.
     networks:
       - duss-network
+    # 💡 ADD ENVIRONMENT VARIABLES here to point to the service names
+    environment:
+      SHORTENER_HOST: url-shortener-service
+      REDIRECT_HOST: url-redirect-service
 
   url-shortener-service:
     build:
       context: ./url-shortener-service
     expose:
       - "${INTERNAL_SHORTEN_PORT}"
-    depends_on:
-      - key-gen-service
-      - postgres
-      - redis
+    # ❌ REMOVED: depends_on: [key-gen-service, postgres, redis]
     networks:
       - duss-network
+    # 💡 ADD ENVIRONMENT VARIABLES here for connectivity
+    environment:
+      KEYGEN_HOST: key-gen-service
+      POSTGRES_HOST: postgres
+      REDIS_HOST: redis
 
   url-redirect-service:
     build:
       context: ./url-redirect-service
     expose:
       - "${INTERNAL_REDIRECT_PORT}"
-    depends_on:
-      - postgres
-      - redis
+    # ❌ REMOVED: depends_on: [postgres, redis]
     networks:
       - duss-network
+    # 💡 ADD ENVIRONMENT VARIABLES here for connectivity
+    environment:
+      POSTGRES_HOST: postgres
+      REDIS_HOST: redis
 
   key-gen-service:
     build:
@@ -40,16 +47,19 @@ services:
       - "${INTERNAL_KEYGEN_PORT}"
     networks:
       - duss-network
+    # 💡 ADD ENVIRONMENT VARIABLES if it depends on the database (recommended)
+    environment:
+      POSTGRES_HOST: postgres
 
   postgres:
     image: postgres:13
-    # ... other postgres configuration
+    # ... other postgres configuration (volumes, environment for credentials)
     networks:
       - duss-network
 
   redis:
     image: redis:6-alpine
-    # ... other redis configuration
+    # ... other redis configuration (volumes, environment for credentials)
     networks:
       - duss-network
 

@@ -15,9 +15,14 @@ import (
 	"github.com/iton0/duss/url-shortener-service/internal/core/services"
 	"github.com/iton0/duss/url-shortener-service/internal/infrastructure/storage"
 	"github.com/iton0/duss/url-shortener-service/internal/infrastructure/web"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	// A new context is created for the application's lifecycle.
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
