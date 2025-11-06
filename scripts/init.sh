@@ -10,4 +10,7 @@ cd ../url-redirect-service || exit 1
 go mod tidy
 cd ../api-gateway-service || exit 1
 go mod tidy
+cd ../persistence-service || exit 1
+go mod tidy
 cd .. || exit 1
+

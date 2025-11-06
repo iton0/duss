@@ -6,4 +6,5 @@ use (
 	./shared
 	./url-redirect-service
 	./url-shortener-service
+	./persistence-service
 )

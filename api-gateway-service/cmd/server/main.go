@@ -12,7 +12,6 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// TODO: need to add api authentication for the gateway
 func main() {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")

@@ -2,26 +2,30 @@
 ```
 duss/
 ├── api-gateway-service
-│   ├── cmd
-│   │   └── server
-│   │       └── main.go
-│   ├── Dockerfile
-│   ├── go.mod
-│   └── internal
-│       ├── api
-│       │   ├── handlers.go
-│       │   └── handlers_test.go
-│       ├── core
-│       │   └── services
-│       │       ├── api_gateway.go
-│       │       └── api_gateway_test.go
-│       └── infrastructure
-│           ├── clients
-│           │   ├── shortener_client.go
-│           │   └── redirect_client.go
-│           └── web
-│               ├── router.go
-│               └── router_test.go
+│   ├── cmd
+│   │   └── server
+│   │       └── main.go
+│   ├── Dockerfile
+│   ├── go.mod
+│   ├── go.sum
+│   └── internal
+│       ├── api
+│       │   ├── handlers.go
+│       │   └── handlers_test.go
+│       ├── core
+│       │   └── services
+│       │       ├── api_gateway.go
+│       │       └── api_gateway_test.go
+│       └── infrastructure
+│           ├── clients
+│           │   ├── mock
+│           │   │   ├── mock_redirect_client.go
+│           │   │   └── mock_shortener_client.go
+│           │   ├── redirect_client.go
+│           │   └── shortener_client.go
+│           └── web
+│               ├── router.go
+│               └── router_test.go
 ├── ARCHITECTURE.md
 ├── CODE_OF_CONDUCT.md
 ├── CONTRIBUTING.md
@@ -29,85 +33,93 @@ duss/
 ├── go.work
 ├── go.work.sum
 ├── key-gen-service
-│   ├── cmd
-│   │   └── server
-│   │       └── main.go
-│   ├── Dockerfile
-│   ├── go.mod
-│   └── internal
-│       ├── api
-│       │   ├── handlers.go
-│       │   └── handlers_test.go
-│       ├── core
-│       │   └── services
-│       │       ├── key_generator.go
-│       │       └── key_generator_test.go
-│       └── infrastructure
-│           └── web
-│               ├── router.go
-│               └── router_test.go
+│   ├── cmd
+│   │   └── server
+│   │       └── main.go
+│   ├── Dockerfile
+│   ├── go.mod
+│   ├── go.sum
+│   └── internal
+│       ├── api
+│       │   ├── handlers.go
+│       │   └── handlers_test.go
+│       ├── core
+│       │   └── services
+│       │       ├── key_generator.go
+│       │       └── key_generator_test.go
+│       └── infrastructure
+│           └── web
+│               ├── router.go
+│               └── router_test.go
 ├── LICENSE
 ├── Makefile
 ├── mise.toml
+├── persistence-service
+│   ├── cmd
+│   │   └── server
+│   │       └── main.go
+│   ├── Dockerfile
+│   ├── go.mod
+│   └── internal
 ├── README.md
 ├── scripts
-│   └── init.sh
+│   └── init.sh
 ├── shared
-│   ├── domain
-│   │   └── url.go
-│   └── go.mod
-├── timeline.txt
+│   ├── domain
+│   │   └── url.go
+│   └── go.mod
+├── timeline.md
 ├── url-redirect-service
-│   ├── cmd
-│   │   └── server
-│   │       └── main.go
-│   ├── Dockerfile
-│   ├── go.mod
-│   ├── go.sum
-│   └── internal
-│       ├── api
-│       │   ├── handlers.go
-│       │   └── handlers_test.go
-│       ├── core
-│       │   └── services
-│       │       ├── redirect.go
-│       │       └── redirect_test.go
-│       └── infrastructure
-│           ├── storage
-│           │   ├── mock
-│           │   │   └── mock_storage.go
-│           │   ├── postgres.go
-│           │   ├── postgres_test.go
-│           │   ├── redis.go
-│           │   ├── redis_test.go
-│           │   └── storage.go
-│           └── web
-│               ├── router.go
-│               └── router_test.go
+│   ├── cmd
+│   │   └── server
+│   │       └── main.go
+│   ├── Dockerfile
+│   ├── go.mod
+│   ├── go.sum
+│   └── internal
+│       ├── api
+│       │   ├── handlers.go
+│       │   └── handlers_test.go
+│       ├── core
+│       │   └── services
+│       │       ├── redirect.go
+│       │       └── redirect_test.go
+│       └── infrastructure
+│           ├── storage
+│           │   ├── mock
+│           │   │   └── mock_storage.go
+│           │   ├── postgres.go
+│           │   ├── postgres_test.go
+│           │   ├── redis.go
+│           │   ├── redis_test.go
+│           │   └── storage.go
+│           └── web
+│               ├── router.go
+│               └── router_test.go
 └── url-shortener-service
     ├── cmd
-    │   └── server
-    │       └── main.go
+    │   └── server
+    │       └── main.go
     ├── Dockerfile
     ├── go.mod
     ├── go.sum
     └── internal
         ├── api
-        │   ├── handlers.go
-        │   └── handlers_test.go
+        │   ├── handlers.go
+        │   └── handlers_test.go
         ├── core
-        │   └── services
-        │       ├── shortener.go
-        │       └── shortener_test.go
+        │   └── services
+        │       ├── shortener.go
+        │       └── shortener_test.go
         └── infrastructure
             ├── storage
-            │   ├── mock
-            │   │   └── mock_storage.go
-            │   ├── postgres.go
-            │   ├── postgres_test.go
-            │   ├── redis.go
-            │   ├── redis_test.go
-            │   └── storage.go
+            │   ├── mock
+            │   │   └── mock_storage.go
+            │   ├── postgres.go
+            │   ├── postgres_test.go
+            │   ├── redis.go
+            │   ├── redis_test.go
+            │   └── storage.go
             └── web
                 ├── router.go
                 └── router_test.go
@@ -134,7 +146,7 @@ This service is the **only one exposed to the public internet**. All client requ
 
 ---
 
-### Backend Services (`url-shortener-service`, `url-redirect-service`, `key-gen-service`)
+### Backend Services (`url-shortener-service`, `url-redirect-service`, `key-gen-service` `persistence-service`)
 
 These services are **internal**. They are only accessible within the private Docker network and should not be exposed on public ports.
 
