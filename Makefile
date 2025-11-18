@@ -3,6 +3,7 @@ REDIRECT_SERVICE_PATH := ./url-redirect-service
 SHORTEN_SERVICE_PATH := ./url-shortener-service
 KEYGEN_SERVICE_PATH := ./key-gen-service
 GATEWAY_SERVICE_PATH := ./api-gateway-service
+PERSISTENCE_SERVICE_PATH := ./persistence-service
 GO_CMD := go
 
 # Define flags for specific services and test types
